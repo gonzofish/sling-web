@@ -1,17 +1,34 @@
 // @flow
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { Route } from 'react-router';
 import {
   BrowserRouter,
   Switch
 } from 'react-router-dom';
 
+import { authenticate } from './actions/session';
+
 import Home from './components/Home';
 import Login from './components/Login';
 import NotFound from './components/NotFound';
 import Signup from './components/Signup';
 
+type Props = {
+  authenticate: () => void
+};
+
 class App extends Component {
+  props: Props;
+
+  componentDidMount() {
+    const token = localStorage.getItem('token');
+
+    if (token) {
+      this.props.authenticate();
+    }
+  }
+
   render() {
     return (
       <BrowserRouter>
@@ -28,4 +45,7 @@ class App extends Component {
   }
 }
 
-export default App;
+export default connect(
+  null,
+  { authenticate }
+)(App);
