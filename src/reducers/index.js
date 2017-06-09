@@ -1,8 +1,11 @@
 import { combineReducers } from 'redux';
 import { reducer as form } from 'redux-form';
 
+import session from './session';
+
 const appReducer = combineReducers({
-    form
+    form,
+    session
 });
 
 export default (state, action) => {
