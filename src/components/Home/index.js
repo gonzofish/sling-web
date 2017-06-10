@@ -1,53 +1,81 @@
 // @flow
 import React, { Component } from 'react';
+import { css, StyleSheet } from 'aphrodite';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-import { logout } from '../../actions/session';
+import { createRoom, fetchRooms, joinRoom } from '../../actions/rooms';
+
 import Navbar from '../Navbar';
+import NewRoomForm from '../NewRoomForm';
+import RoomListItem from '../RoomListItem';
+
+const styles = StyleSheet.create({
+  card: {
+    margin: '2rem auto',
+    maxWidth: '500px',
+    padding: '3rem 4rem'
+  }
+});
+
+type Room = {
+  id: number,
+  name: string
+};
 
 type Props = {
-    logout: () => void,
-    currentUser: Object,
-    isAuthenticated: boolean
+  createRoom: (Object, Object) => void,
+  currentUserRooms: Array<Room>,
+  fetchRooms: () => void,
+  joinRoom: (number, Object) => void,
+  rooms: Array<Room>
 };
 
 class Home extends Component {
-    static contextTypes = {
-        router: PropTypes.object
-    };
-    handleLogout = () => this.props.logout(this.context.router);
-    props: Props;
+  static contextTypes = {
+    router: PropTypes.object
+  };
+  handleNewRoomSubmit = (data) => this.props.createRoom(data, this.context.router);
+  handleRoomJoin = (roomId) => this.props.joinRoom(roomId, this.context.router);
+  props: Props;
 
-    render() {
-        const { currentUser, isAuthenticated } = this.props;
+  componentDidMount() {
+    this.props.fetchRooms();
+  }
 
-        return (
-            <div style={ { flex: '1' } }>
-                <Navbar />
-                <ul>
-                    <li><Link to="/login">Login</Link></li>
-                    <li><Link to="/signup">Signup</Link></li>
-                </ul>
+  renderRooms() {
+    const roomIds = this.props.currentUserRooms.map((room) => room.id);
 
-                { isAuthenticated &&
-                <div>
-                    <span>{ currentUser.username }</span>
-                    <button type="button" onClick={ this.handleLogout }>
-                        Logout
-                    </button>
-                </div>
-                }
-            </div>
-        );
-    }
+    return this.props.rooms.map((room) =>
+      <RoomListItem currentUserRoomIds={ roomIds }
+        key={ room.id }
+        onRoomJoin={ this.handleRoomJoin }
+        room={ room } />
+    );
+  }
+
+  render() {
+    return (
+      <div style={ { flex: '1' } }>
+        <Navbar />
+        <div className={ `card ${ css(styles.card) }` }>
+          <h3 style={ { marginBottom: '2rem', textAlign: 'center' } }>Create a New Room</h3>
+          <NewRoomForm onSubmit={ this.handleNewRoomSubmit } />
+        </div>
+
+        <div className={ `card ${ css(styles.card) }` }>
+          <h3 style={ { marginBottom: '2rem', textAlign: 'center' } }>Join a Room</h3>
+          { this.renderRooms() }
+        </div>
+      </div>
+    );
+  }
 }
 
 export default connect(
-    (state) => ({
-        isAuthenticated: state.session.isAuthenticated,
-        currentUser: state.session.currentUser
-    }),
-    { logout }
+  (state) => ({
+    currentUserRooms: state.rooms.currentUserRooms,
+    rooms: state.rooms.all
+  }),
+  { createRoom, fetchRooms, joinRoom }
 )(Home);

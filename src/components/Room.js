@@ -1,7 +1,7 @@
 // @flow
 import React from 'react';
 
-const Room = (props) =>
-    <div>Room: { props.params.id }</div>;
+const Room = (props: Object) =>
+    <div>Room: { props.match.params.id }</div>;
 
 export default Room;
