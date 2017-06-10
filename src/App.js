@@ -7,15 +7,20 @@ import {
   Switch
 } from 'react-router-dom';
 
-import { authenticate } from './actions/session';
+import { authenticate, unauthenticate } from './actions/session';
 
 import Home from './components/Home';
 import Login from './components/Login';
 import NotFound from './components/NotFound';
+import RedirectAuthenticated from './components/RedirectAuthenticated';
+import RouteAuthenticated from './components/RouteAuthenticated';
 import Signup from './components/Signup';
 
 type Props = {
-  authenticate: () => void
+  authenticate: () => void,
+  isAuthenticated: boolean,
+  unauthenticate: () => void,
+  willAuthenticate: boolean
 };
 
 class App extends Component {
@@ -26,17 +31,23 @@ class App extends Component {
 
     if (token) {
       this.props.authenticate();
+    } else {
+      this.props.unauthenticate();
     }
   }
 
   render() {
+    const { isAuthenticated, willAuthenticate } = this.props;
+    const authProps = { isAuthenticated, willAuthenticate };
+
     return (
+
       <BrowserRouter>
         <div style={{ display: 'flex', flex: '1' }}>
           <Switch>
-              <Route exact path="/" component={ Home } />
-              <Route path="/login" component={ Login } />
-              <Route path="/signup" component={ Signup } />
+              <RouteAuthenticated exact path="/" component={ Home } { ...authProps } />
+              <RedirectAuthenticated path="/login" component={ Login } { ...authProps } />
+              <RedirectAuthenticated path="/signup" component={ Signup } { ...authProps } />
               <Route path="*" component={ NotFound } />
           </Switch>
         </div>
@@ -46,6 +57,9 @@ class App extends Component {
 }
 
 export default connect(
-  null,
-  { authenticate }
+  (state) => ({
+    isAuthenticated: state.session.isAuthenticated,
+    willAuthenticate: state.session.willAuthenticate
+  }),
+  { authenticate, unauthenticate }
 )(App);

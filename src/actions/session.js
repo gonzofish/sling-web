@@ -2,14 +2,18 @@ import { reset } from 'redux-form';
 import api from '../api';
 
 export const authenticate = () => {
-    return (dispatch) => api.post('/sessions/refresh')
-        .then((response) => {
-            setCurrentUser(dispatch, response);
-        })
-        .catch(() => {
-            localStorage.removeItem('token');
-            window.location = '/';
-        });
+    return (dispatch) => {
+        dispatch({ type: 'AUTHENTICATION_REQUEST' });
+
+        api.post('/sessions/refresh')
+            .then((response) => {
+                setCurrentUser(dispatch, response);
+            })
+            .catch(() => {
+                localStorage.removeItem('token');
+                window.location = '/login';
+            });
+    };
 };
 
 export const login = (data, router) => {
@@ -46,3 +50,5 @@ export const signup = (data, router) => {
             router.history.push('/');
         });
 };
+
+export const unauthenticate = () => ({ type: 'AUTHENTICATION_FAILURE' });
