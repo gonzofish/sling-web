@@ -1,5 +1,7 @@
 import { reset } from 'redux-form';
+
 import api from '../api';
+import { fetchUserRooms } from './rooms';
 
 export const authenticate = () => {
     return (dispatch) => {
@@ -39,7 +41,8 @@ const setCurrentUser = (dispatch, response) => {
     dispatch({
         response,
         type: 'AUTHENTICATION_SUCCESS'
-    })
+    });
+    dispatch(fetchUserRooms(response.data.id));
 };
 
 export const signup = (data, router) => {
