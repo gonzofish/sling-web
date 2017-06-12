@@ -1,6 +1,7 @@
 const initialState = {
     currentUser: {},
     isAuthenticated: false,
+    socket: null,
     willAuthenticate: true
 };
 
@@ -28,7 +29,13 @@ export default function (state = initialState, action) {
                 ...state,
                 currentUser: {},
                 isAuthenticated: false,
+                socket: null,
                 willAuthenticate: false
+            };
+        case 'SOCKET_CONNECTED':
+            return {
+                ...state,
+                socket: action.socket
             };
         default:
             return state;

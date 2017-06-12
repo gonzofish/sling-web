@@ -1,7 +1,11 @@
 import { reset } from 'redux-form';
+import { Socket } from 'phoenix';
 
 import api from '../api';
 import { fetchUserRooms } from './rooms';
+
+const API_URL = process.env.REACT_APP_API_URL;
+const WEBSOCKET_URL = API_URL.replace(/(https|http)/, 'ws').replace('/api', '');
 
 export const authenticate = () => {
     return (dispatch) => {
@@ -17,6 +21,20 @@ export const authenticate = () => {
             });
     };
 };
+
+export const connectToSocket = (dispatch) => {
+  const token = JSON.parse(localStorage.getItem('token'));
+  const socket = new Socket(`${ WEBSOCKET_URL }/socket`, {
+    logger: (kind, message, data) => { console.log(`${ kind }: ${ message }`, data); },
+    params: { token }
+  });
+
+  socket.connect();
+  dispatch({
+    socket,
+    type: 'SOCKET_CONNECTED'
+  });
+}
 
 export const login = (data, router) => {
     return (dispatch) => api.post('/sessions', data)
@@ -43,6 +61,7 @@ const setCurrentUser = (dispatch, response) => {
         type: 'AUTHENTICATION_SUCCESS'
     });
     dispatch(fetchUserRooms(response.data.id));
+    connectToSocket(dispatch);
 };
 
 export const signup = (data, router) => {
