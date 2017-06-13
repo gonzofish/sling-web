@@ -9,7 +9,7 @@ import LoginForm from '../LoginForm';
 import Navbar from '../Navbar';
 
 type Props = {
-    login: () => void;
+    login: (data: any, router: any) => void;
 };
 
 class Login extends Component {

@@ -18,11 +18,13 @@ import Room from './components/Room';
 import Sidebar from './components/Sidebar';
 import Signup from './components/Signup';
 
+import 'font-awesome/css/font-awesome.css';
+
 type Props = {
   authenticate: () => void,
-  currentUserRooms: Array,
+  currentUserRooms: Array<any>,
   isAuthenticated: boolean,
-  logout: () => void,
+  logout: (router: any) => void,
   unauthenticate: () => void,
   willAuthenticate: boolean
 };
@@ -48,11 +50,10 @@ class App extends Component {
     return (
 
       <BrowserRouter>
-        <div style={{ display: 'flex', flex: '1' }}>
+        <div style={{ display: 'flex', flex: '1', height: '100vh' }}>
           { isAuthenticated &&
           <Sidebar onLogoutClick={ this.handleLogout }
-            rooms={ currentUserRooms }
-            router={ this.context.router } />
+            rooms={ currentUserRooms } />
           }
           <Switch>
               <RouteAuthenticated exact path="/" component={ Home } { ...authProps } />
