@@ -4,15 +4,16 @@ import moment from 'moment';
 
 import Avatar from '../Avatar';
 
-type Props = {
-  message: {
-    inserted_at: string;
-    text: string;
-    user: {
-      email: string,
-      username: string
-    }
+type UserMessage = {
+  inserted_at: string;
+  text: string;
+  user: {
+    email: string,
+    username: string
   }
+};
+type Props = {
+  message: UserMessage
 };
 
 const Message = ({ message: { inserted_at, text, user } }: Props) =>

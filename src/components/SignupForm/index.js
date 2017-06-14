@@ -15,8 +15,8 @@ const styles = StyleSheet.create({
 });
 
 type Props = {
-    handleSubmit: () => void,
-    onSubmit: () => void,
+    handleSubmit: (data: any) => void,
+    onSubmit: (data: any) => void,
     submitting: boolean
 };
 

@@ -2,7 +2,7 @@
 import React from 'react';
 
 type Props = {
-  currentUserRoomIds: Array,
+  currentUserRoomIds: Array<number>,
   onRoomJoin: (number) => void,
   room: {
     id: number,

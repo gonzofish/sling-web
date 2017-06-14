@@ -8,7 +8,7 @@ import Navbar from '../Navbar';
 import SignupForm from '../SignupForm';
 
 type Props = {
-    signup: () => void,
+    signup: (data: any, router: Object) => void,
 };
 
 class Signup extends Component {

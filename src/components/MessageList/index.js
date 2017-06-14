@@ -11,7 +11,8 @@ const styles = StyleSheet.create({
     background: '#fff',
     flex: '1',
     padding: '10px 10px 0 10px',
-    overflowY: 'auto'
+    overflowY: 'auto',
+    width: '100%'
   },
   dayDivider: {
     margin: '1rem 0',
@@ -36,6 +37,7 @@ const styles = StyleSheet.create({
 });
 
 type MessageType = {
+  day: string;
   id: number,
   inserted_at: string
 };
@@ -45,19 +47,19 @@ type Props = {
 
 class MessageList extends Component {
   props: Props;
-  renderMessages = (messages) => messages.map((message) =>
+  renderMessages = (messages: Array<MessageType>) => messages.map((message) =>
     <Message key={ message.id } message={ message } />
   );
 
   renderDays() {
     const { messages } = this.props;
 
-    (messages || []).forEach((message) => message.day = moment(message.inserted_at).format('MMMM Do'));
+    messages.forEach((message) => message.day = moment(message.inserted_at).format('MMMM Do'));
 
     const dayGroups = groupBy(messages, 'day');
     const days = Object.keys(dayGroups).map((date) => ({ date, messages: dayGroups[date] }));
     const today = moment().format('MMMM Do');
-    const yesterday = moment().subtract(1, 'days').format('MMM Do');
+    const yesterday = moment().subtract(1, 'days').format('MMMM Do');
 
     return days.map((day) =>
       <div key={ day.date }>

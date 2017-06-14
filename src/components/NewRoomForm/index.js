@@ -3,8 +3,8 @@ import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form';
 
 type Props = {
-  handleSubmit: (Object) => void,
-  onSubmit: () => void,
+  handleSubmit: (data: Object) => void,
+  onSubmit: (data: any) => void,
   submitting: boolean
 };
 

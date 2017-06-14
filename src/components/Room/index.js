@@ -10,9 +10,12 @@ import {
 import MessageForm from '../MessageForm';
 import MessageList from '../MessageList';
 import RoomNavbar from '../RoomNavbar';
+import RoomSidebar from '../RoomSidebar';
 
 type MessageType = {
-  id: number
+  day: string;
+  id: number,
+  inserted_at: string
 };
 type RoomType = {
   id: number,
@@ -22,6 +25,7 @@ type Props = {
   channel: any,
   connectToChannel: (socket: any, roomId: number) => void,
   createMessage: (channel: any, data: any) => void,
+  currentUser: any,
   leaveChannel: (channel: any) => void,
   match: {
     params: {
@@ -29,6 +33,7 @@ type Props = {
     }
   },
   messages: Array<MessageType>,
+  presentUsers: Array<any>,
   room: RoomType,
   socket: any
 };
@@ -59,10 +64,15 @@ class Room extends Component {
 
   render() {
     return (
-      <div style={ { display: 'flex', flexDirection: 'column', height: '100vh', width: '100%' }}>
-        <RoomNavbar room={ this.props.room } />
-        <MessageList messages={ this.props.messages } />
-        <MessageForm onSubmit={ this.handleMessageCreate } />
+      <div style={ { display: 'flex', height: '100vh', width: '100%' }}>
+        <RoomSidebar currentUser={ this.props.currentUser }
+          presentUsers={ this.props.presentUsers }
+          room={ this.props.room } />
+        <div style={ { display: 'flex', flexDirection: 'column', width: '100%' }}>
+          <RoomNavbar room={ this.props.room } />
+          <MessageList messages={ this.props.messages } />
+          <MessageForm onSubmit={ this.handleMessageCreate } />
+        </div>
       </div>
     );
   }
@@ -70,7 +80,9 @@ class Room extends Component {
 
 export default connect((state) => ({
   channel: state.room.channel,
+  currentUser: state.session.currentUser,
   messages: state.room.messages,
+  presentUsers: state.session.presentUsers,
   room: state.room.currentRoom,
   socket: state.session.socket
 }), {
