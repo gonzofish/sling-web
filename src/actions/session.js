@@ -25,7 +25,6 @@ export const authenticate = () => {
 export const connectToSocket = (dispatch) => {
   const token = JSON.parse(localStorage.getItem('token'));
   const socket = new Socket(`${ WEBSOCKET_URL }/socket`, {
-    logger: (kind, message, data) => { console.log(`${ kind }: ${ message }`, data); },
     params: { token }
   });
 

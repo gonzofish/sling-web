@@ -1,7 +1,7 @@
 // @flow
 import React, { Component } from 'react';
 import { css, StyleSheet } from 'aphrodite';
-import { groupBy } from 'lodash';
+import { debounce, groupBy } from 'lodash';
 import moment from 'moment';
 
 import Message from '../Message';
@@ -42,14 +42,51 @@ type MessageType = {
   inserted_at: string
 };
 type Props = {
-  messages: Array<MessageType>
+  loadingOlderMessages: boolean,
+  messages: Array<MessageType>,
+  moreMessages: Array<MessageType>,
+  onLoadMore: () => void
 };
 
 class MessageList extends Component {
+  container: any;
   props: Props;
+
+  handleScroll = () => {
+    if (this.props.moreMessages && this.container.scrollTop < 20) {
+      this.props.onLoadMore();
+    }
+  };
+  maybeScrollToBottom = () => {
+    if (this.container.scrollHeight - this.container.scrollTop < this.container.clientHeight + 50) {
+      this.scrollToBottom();
+    }
+  };
   renderMessages = (messages: Array<MessageType>) => messages.map((message) =>
     <Message key={ message.id } message={ message } />
   );
+  scrollToBottom = () => setTimeout(() => {
+    this.container.scrollTop = this.container.scrollHeight;
+  });
+
+  constructor(props: Props) {
+    super(props);
+    this.handleScroll = debounce(this.handleScroll, 200);
+  }
+
+  componentDidMount() {
+    this.container.addEventListener('scroll', this.handleScroll);
+  }
+
+  componentWillReceiveProps(nextProps: Props) {
+    if (nextProps.messages.length !== this.props.length) {
+      this.maybeScrollToBottom();
+    }
+  }
+
+  componentWillUnmount() {
+    this.container.removeEventListener('scroll', this.handleScroll);
+  }
 
   renderDays() {
     const { messages } = this.props;
@@ -78,7 +115,16 @@ class MessageList extends Component {
 
   render() {
     return (
-      <div className={ css(styles.container) }>
+      <div className={ css(styles.container) } ref={ (c) => { this.container = c; } }>
+        { this.props.moreMessages &&
+        <div style={ { textAlign: 'center' } }>
+          <button className="btn btn-link btn-sm"
+            disabled={ this.props.loadingOlderMessages }
+            onClick={ this.props.onLoadMore }>
+            { this.props.loadingOlderMessages ? 'Loading' : 'Load More' }
+          </button>
+        </div>
+        }
         { this.renderDays() }
       </div>
     )
